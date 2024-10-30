@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 
@@ -14,8 +15,11 @@ except ImportError:
     import telebot
     print("pyTelegramBotAPI успешно установлен!")
 
-# Прямой ввод токена
-TOKEN = '7368730334:AAHrLFjgLQP_PBYRdYkDW5H7QoiZHbBzoUc'
+# Получаем токен из переменных окружения
+TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
+if not TOKEN:
+    raise ValueError("Токен Telegram бота не найден! Убедитесь, что переменная окружения TELEGRAM_BOT_TOKEN установлена.")
+
 bot = telebot.TeleBot(TOKEN)
 
 @bot.message_handler(commands=['start'])
