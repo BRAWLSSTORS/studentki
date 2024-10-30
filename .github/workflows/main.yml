@@ -18,13 +18,40 @@ jobs:
       with:
         python-version: '3.9'
 
-    - name: Установить зависимости
-      run: |
-        python -m pip install --upgrade pip
-        pip install pyTelegramBotAPI
-
-    - name: Запустить бота
+    - name: Установить и запустить бота
       env:
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       run: |
+        python -m pip install --upgrade pip
+        python -m pip install pyTelegramBotAPI
+
+        echo "import os" > bot.py
+        echo "import subprocess" >> bot.py
+        echo "import sys" >> bot.py
+        echo '' >> bot.py
+        echo "def install_package(package):" >> bot.py
+        echo "    try:" >> bot.py
+        echo "        __import__(package)" >> bot.py
+        echo "    except ImportError:" >> bot.py
+        echo "        print(f'Устанавливаю {package}...')" >> bot.py
+        echo "        subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])" >> bot.py
+        echo "        print(f'{package} успешно установлен!')" >> bot.py
+        echo '' >> bot.py
+        echo "install_package('telebot')" >> bot.py
+        echo "import telebot" >> bot.py
+        echo '' >> bot.py
+        echo "TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')" >> bot.py
+        echo "if not TOKEN:" >> bot.py
+        echo "    raise ValueError('Токен Telegram бота не найден!')" >> bot.py
+        echo '' >> bot.py
+        echo "bot = telebot.TeleBot(TOKEN)" >> bot.py
+        echo '' >> bot.py
+        echo "@bot.message_handler(commands=['start'])" >> bot.py
+        echo "def send_welcome(message):" >> bot.py
+        echo "    bot.reply_to(message, 'Привет! Я твой новый телеграм бот. Рад тебя видеть! 👋')" >> bot.py
+        echo '' >> bot.py
+        echo "if __name__ == '__main__':" >> bot.py
+        echo "    print('Бот запущен!')" >> bot.py
+        echo "    bot.infinity_polling()" >> bot.py
+
         python bot.py
